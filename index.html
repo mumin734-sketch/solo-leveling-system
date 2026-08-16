@@ -179,13 +179,17 @@ function update(){
 
 function completeQuest(button,reward){
 
+  if(button.dataset.verified !== "true"){
+    alert("⚠ Quest not verified!\nComplete the actual task first.");
+    return;
+  }
+
   if(button.disabled)return;
 
   button.disabled=true;
   button.innerText="✓ Completed";
 
   data.xp += reward;
-
   data.streak++;
 
   if(data.xp>=100){
