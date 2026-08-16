@@ -1,62 +1,72 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solo Leveling System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solo Leveling System</title>
 
-  <style>
-    body {
-      margin: 0;
-      background: #080b14;
-      color: white;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #5cc8ff;
-    }
-
-    .card {
-      background: #111827;
-      border: 1px solid #263449;
-      border-radius: 15px;
-      padding: 18px;
-      margin: 15px 0;
-    }
-
-    .stat {
-      display: flex;
-      justify-content: space-between;
-      margin: 10px 0;
-    }
-
-    .xpbar {
-      background: #222b3d;
-      height: 15px;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    #xpFill {
-      height: 100%;
-      width: 0%;
-      background: #35bfff;
-    }
-
-    button {
-      width: 100%;
-      padding: 13px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 10px;
-      background: #168cff;
-      color: white;
-      font-size: 16px;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  padding:20px;
+  background:#080b14;
+  color:white;
+  font-family:Arial,sans-serif;
+}
+h1{text-align:center;color:#5cc8ff}
+.card{
+  background:#111827;
+  border:1px solid #263449;
+  border-radius:15px;
+  padding:18px;
+  margin:15px 0;
+}
+.xpbar{
+  height:16px;
+  background:#222b3d;
+  border-radius:10px;
+  overflow:hidden;
+}
+#xpFill{
+  height:100%;
+  width:0%;
+  background:#35bfff;
+}
+.quest{
+  background:#182235;
+  padding:12px;
+  border-radius:10px;
+  margin:10px 0;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border:0;
+  border-radius:10px;
+  background:#168cff;
+  color:white;
+  font-size:15px;
+}
+button:disabled{
+  background:#444;
+}
+.stat{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+}
+input{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #263449;
+  background:#0d1422;
+  color:white;
+  margin-top:8px;
+}
+</style>
 </head>
 
 <body>
@@ -64,77 +74,167 @@
 <h1>⚔ SYSTEM</h1>
 
 <div class="card">
-  <h2>PLAYER</h2>
-  <p>Level: <b id="level">1</b></p>
-  <p>XP: <b id="xp">0</b> / 100</p>
-
-  <div class="xpbar">
-    <div id="xpFill"></div>
-  </div>
+<h2>PLAYER</h2>
+<p>Level: <b id="level">1</b></p>
+<p>XP: <b id="xp">0</b> / 100</p>
+<div class="xpbar">
+<div id="xpFill"></div>
+</div>
+<p>🔥 Streak: <b id="streak">0</b> days</p>
 </div>
 
 <div class="card">
-  <h2>STATS</h2>
+<h2>📊 STATS</h2>
 
-  <div class="stat">
-    <span>💪 Strength</span>
-    <b id="strength">1</b>
-  </div>
+<div class="stat">
+<span>💪 Strength</span>
+<b id="strength">1</b>
+</div>
 
-  <div class="stat">
-    <span>🧠 Intelligence</span>
-    <b id="intelligence">1</b>
-  </div>
+<div class="stat">
+<span>🧠 Intelligence</span>
+<b id="intelligence">1</b>
+</div>
 
-  <div class="stat">
-    <span>🔥 Discipline</span>
-    <b id="discipline">1</b>
-  </div>
+<div class="stat">
+<span>🔥 Discipline</span>
+<b id="discipline">1</b>
+</div>
 </div>
 
 <div class="card">
-  <h2>DAILY QUEST</h2>
+<h2>🎯 DAILY QUESTS</h2>
 
-  <p>Complete your first task.</p>
+<div class="quest">
+📚 Study
+<br>
++30 XP
+<button onclick="completeQuest(this,30)">Complete</button>
+</div>
 
-  <button onclick="completeQuest()">
-    Complete Quest +25 XP
-  </button>
+<div class="quest">
+🏃 Exercise
+<br>
++25 XP
+<button onclick="completeQuest(this,25)">Complete</button>
+</div>
+
+<div class="quest">
+📖 Reading
+<br>
++20 XP
+<button onclick="completeQuest(this,20)">Complete</button>
+</div>
+
+<div class="quest">
+🧹 Organize
+<br>
++15 XP
+<button onclick="completeQuest(this,15)">Complete</button>
+</div>
+
+</div>
+
+<div class="card">
+<h2>➕ CUSTOM QUEST</h2>
+
+<input id="customQuest" placeholder="Enter your quest">
+
+<input id="customXP" type="number" placeholder="XP reward">
+
+<button onclick="addCustomQuest()">Add Quest</button>
+
+<div id="customList"></div>
 </div>
 
 <script>
 
-let xp = 0;
-let level = 1;
+let data = JSON.parse(localStorage.getItem("soloSystem")) || {
+  xp:0,
+  level:1,
+  streak:0,
+  strength:1,
+  intelligence:1,
+  discipline:1
+};
 
-function updateSystem() {
-
-  document.getElementById("xp").innerText = xp;
-  document.getElementById("level").innerText = level;
-
-  let percentage = xp;
-
-  document.getElementById("xpFill").style.width =
-    percentage + "%";
+function save(){
+  localStorage.setItem("soloSystem",JSON.stringify(data));
 }
 
-function completeQuest() {
+function update(){
 
-  xp += 25;
+  document.getElementById("xp").innerText=data.xp;
+  document.getElementById("level").innerText=data.level;
+  document.getElementById("streak").innerText=data.streak;
 
-  if (xp >= 100) {
-    xp -= 100;
-    level++;
+  document.getElementById("strength").innerText=data.strength;
+  document.getElementById("intelligence").innerText=data.intelligence;
+  document.getElementById("discipline").innerText=data.discipline;
 
-    alert("LEVEL UP! ⚔");
+  document.getElementById("xpFill").style.width=data.xp+"%";
+
+  save();
+}
+
+function completeQuest(button,reward){
+
+  if(button.disabled)return;
+
+  button.disabled=true;
+  button.innerText="✓ Completed";
+
+  data.xp += reward;
+
+  data.streak++;
+
+  if(data.xp>=100){
+
+    data.xp -= 100;
+    data.level++;
+
+    data.strength++;
+    data.intelligence++;
+    data.discipline++;
+
+    alert("⚔ LEVEL UP!\n\nYou reached Level "+data.level+"!");
   }
 
-  updateSystem();
+  update();
 }
 
-updateSystem();
+function addCustomQuest(){
+
+  let name=document.getElementById("customQuest").value;
+  let reward=parseInt(document.getElementById("customXP").value);
+
+  if(!name || !reward){
+    alert("Enter quest and XP.");
+    return;
+  }
+
+  let div=document.createElement("div");
+
+  div.className="quest";
+
+  div.innerHTML=
+    "🎯 "+name+
+    "<br>+"+reward+" XP"+
+    "<button>Complete</button>";
+
+  div.querySelector("button").onclick=function(){
+    completeQuest(this,reward);
+  };
+
+  document.getElementById("customList").appendChild(div);
+
+  document.getElementById("customQuest").value="";
+  document.getElementById("customXP").value="";
+}
+
+update();
 
 </script>
 
 </body>
-  </html>
+</html> 
