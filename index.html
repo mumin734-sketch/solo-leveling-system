@@ -109,7 +109,13 @@ input{
 📚 Study
 <br>
 +30 XP
-<button onclick="completeQuest(this,30)">Complete</button>
+<br>
+⏱️ <span id="studyTimer">20:00</span>
+
+<button onclick="startStudy()">Start Study</button>
+<button id="studyComplete" onclick="verifyStudy()" disabled>
+Complete Quest
+</button>
 </div>
 
 <div class="quest">
@@ -206,7 +212,57 @@ function completeQuest(button,reward){
 
   update();
 }
+let studyTime = 20 * 60;
+let studyInterval = null;
+let studyStarted = false;
 
+function startStudy(){
+
+  if(studyStarted)return;
+
+  studyStarted = true;
+
+  document.querySelector('[onclick="startStudy()"]').disabled = true;
+
+  studyInterval = setInterval(function(){
+
+    studyTime--;
+
+    let minutes = Math.floor(studyTime / 60);
+    let seconds = studyTime % 60;
+
+    document.getElementById("studyTimer").innerText =
+      String(minutes).padStart(2,"0") + ":" +
+      String(seconds).padStart(2,"0");
+
+    if(studyTime <= 0){
+
+      clearInterval(studyInterval);
+
+      document.getElementById("studyTimer").innerText = "00:00";
+
+      let button = document.getElementById("studyComplete");
+
+      button.disabled = false;
+      button.dataset.verified = "true";
+
+      alert("📚 STUDY QUEST VERIFIED!\n\nYou completed the 20-minute study session.");
+    }
+
+  },1000);
+}
+
+function verifyStudy(){
+
+  let button = document.getElementById("studyComplete");
+
+  if(button.dataset.verified !== "true"){
+    alert("⚠ Complete the full study session first.");
+    return;
+  }
+
+  completeQuest(button,30);
+ }
 function addCustomQuest(){
 
   let name=document.getElementById("customQuest").value;
